@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import React, {PureComponent} from 'react';
 import {Animated, View} from 'react-native';
+import * as rxjs from 'rxjs';
+import * as rxjsAm from 'rxjs-async-map';
 import TooltipRenderedOnPageBody from './TooltipRenderedOnPageBody';
 import Hoverable from '../Hoverable';
 import withWindowDimensions from '../withWindowDimensions';
@@ -39,22 +41,13 @@ class Tooltip extends PureComponent {
         this.hideTooltip = this.hideTooltip.bind(this);
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.windowWidth === prevProps.windowWidth && this.props.windowHeight === prevProps.windowHeight) {
-            return;
-        }
-
-        this.getWrapperPositionPromise = makeCancellablePromise(this.getWrapperPosition());
-        this.getWrapperPositionPromise.promise
-            .then(({x, y}) => this.setState({xOffset: x, yOffset: y}));
-    }
-
     componentWillUnmount() {
-        if (!this.getWrapperPositionPromise) {
+        if (!this.getWrapperPositionSubscription) {
             return;
         }
 
-        this.getWrapperPositionPromise.cancel();
+        this.getWrapperPositionSubscription.unsubscribe();
+        this.getWrapperPositionSubscription = undefined;
     }
 
     /**
@@ -87,44 +80,57 @@ class Tooltip extends PureComponent {
         this.animation.stopAnimation();
         this.shouldStartShowAnimation = true;
 
-        // We have to dynamically calculate the position here as tooltip could have been rendered on some elments
-        // that has changed its position
-        this.getWrapperPositionPromise = makeCancellablePromise(this.getWrapperPosition());
-        this.getWrapperPositionPromise.promise
-            .then(({
-                x, y, width, height,
-            }) => {
-                this.setState({
-                    wrapperWidth: width,
-                    wrapperHeight: height,
-                    xOffset: x,
-                    yOffset: y,
-                });
+        const getWrapperPositionStream = rxjs.animationFrames().pipe(
+            rxjsAm.asyncMap(this.getWrapperPosition, 1),
+        );
 
-                // We may need this check due to the reason that the animation start will fire async
-                // and hideTooltip could fire before it thus keeping the Tooltip visible
-                if (this.shouldStartShowAnimation) {
-                    // When TooltipSense is active, immediately show the tooltip
-                    if (TooltipSense.isActive()) {
-                        this.animation.setValue(1);
-                    } else {
-                        this.isTooltipSenseInitiator = true;
-                        Animated.timing(this.animation, {
-                            toValue: 1,
-                            duration: 140,
-                            delay: 500,
-                            useNativeDriver: false,
-                        }).start();
+        this.getWrapperPositionSubscription = rxjs.forkJoin([
+            getWrapperPositionStream.pipe(
+                rxjs.tap(({
+                    x, y, width, height,
+                }) => {
+                    this.setState({
+                        wrapperWidth: width,
+                        wrapperHeight: height,
+                        xOffset: x,
+                        yOffset: y,
+                    });
+                }),
+            ),
+            getWrapperPositionStream.pipe(
+                rxjs.first(),
+                rxjs.tap(() => {
+                    // We may need this check due to the reason that the animation start will fire async
+                    // and hideTooltip could fire before it thus keeping the Tooltip visible
+                    if (this.shouldStartShowAnimation) {
+                        // When TooltipSense is active, immediately show the tooltip
+                        if (TooltipSense.isActive()) {
+                            this.animation.setValue(1);
+                        } else {
+                            this.isTooltipSenseInitiator = true;
+                            Animated.timing(this.animation, {
+                                toValue: 1,
+                                duration: 140,
+                                delay: 500,
+                                useNativeDriver: false,
+                            }).start();
+                        }
+                        TooltipSense.activate();
                     }
-                    TooltipSense.activate();
-                }
-            });
+                }),
+            ),
+        ]).subscribe();
     }
 
     /**
      * Hide the tooltip in an animation.
      */
     hideTooltip() {
+        if (this.getWrapperPositionSubscription) {
+            this.getWrapperPositionSubscription.unsubscribe();
+            this.getWrapperPositionSubscription = undefined;
+        }
+
         this.animation.stopAnimation();
         this.shouldStartShowAnimation = false;
         if (TooltipSense.isActive() && !this.isTooltipSenseInitiator) {
