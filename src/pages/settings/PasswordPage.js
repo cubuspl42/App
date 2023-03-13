@@ -177,7 +177,7 @@ class PasswordPage extends Component {
                                 <View style={styles.mb6}>
                                     <TextInput
                                         label={`${this.props.translate('passwordPage.currentPassword')}*`}
-                                        ref={el => this.currentPasswordInputRef = el}
+                                        innerTextInputRef={el => this.currentPasswordInputRef = el}
                                         secureTextEntry
                                         autoCompleteType="password"
                                         textContentType="password"

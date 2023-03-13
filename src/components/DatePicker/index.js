@@ -68,13 +68,8 @@ class DatePicker extends React.Component {
         return (
             <TextInput
                 forceActiveLabel
-                ref={(el) => {
-                    this.inputRef = el;
-
-                    if (_.isFunction(this.props.innerRef)) {
-                        this.props.innerRef(el);
-                    }
-                }}
+                ref={this.props.innerRef}
+                innerTextInputRef={el => this.inputRef = el}
                 onFocus={this.showDatepicker}
                 label={this.props.label}
                 onInputChange={this.setDate}

@@ -9,7 +9,7 @@ const propTypes = {
     formattedAmount: PropTypes.string.isRequired,
 
     /** A ref to forward to amount text input */
-    forwardedRef: PropTypes.oneOfType([
+    innerTextInputRef: PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.shape({current: PropTypes.instanceOf(React.Component)}),
     ]),
@@ -31,12 +31,12 @@ const propTypes = {
 };
 
 const defaultProps = {
-    forwardedRef: undefined,
+    innerTextInputRef: undefined,
     selection: undefined,
     onSelectionChange: () => {},
 };
 
-function AmountTextInput(props) {
+export default function AmountTextInput(props) {
     return (
         <TextInput
             disableKeyboard
@@ -45,7 +45,7 @@ function AmountTextInput(props) {
             inputStyle={[styles.iouAmountTextInput, styles.p0, styles.noLeftBorderRadius, styles.noRightBorderRadius]}
             textInputContainerStyles={[styles.borderNone, styles.noLeftBorderRadius, styles.noRightBorderRadius]}
             onChangeText={props.onChangeAmount}
-            ref={props.forwardedRef}
+            innerTextInputRef={props.innerTextInputRef}
             value={props.formattedAmount}
             placeholder={props.placeholder}
             keyboardType={CONST.KEYBOARD_TYPE.NUMBER_PAD}
@@ -59,8 +59,3 @@ function AmountTextInput(props) {
 AmountTextInput.propTypes = propTypes;
 AmountTextInput.defaultProps = defaultProps;
 AmountTextInput.displayName = 'AmountTextInput';
-
-export default React.forwardRef((props, ref) => (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <AmountTextInput {...props} forwardedRef={ref} />
-));

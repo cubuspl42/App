@@ -67,7 +67,7 @@ class AddPayPalMePage extends React.Component {
                             {this.props.translate('addPayPalMePage.enterYourUsernameToGetPaidViaPayPal')}
                         </Text>
                         <TextInput
-                            ref={el => this.payPalMeInputRef = el}
+                            innerTextInputRef={el => this.payPalMeInputRef = el}
                             label={this.props.translate('addPayPalMePage.payPalMe')}
                             autoCompleteType="off"
                             autoCorrect={false}

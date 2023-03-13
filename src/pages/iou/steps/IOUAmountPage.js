@@ -269,7 +269,7 @@ class IOUAmountPage extends React.Component {
                         onCurrencyButtonPress={this.navigateToCurrencySelectionPage}
                         placeholder={this.props.numberFormat(0)}
                         preferredLocale={this.props.preferredLocale}
-                        ref={el => this.textInput = el}
+                        innerTextInputRef={el => this.textInput = el}
                         selectedCurrencyCode={this.props.iou.selectedCurrencyCode || CONST.CURRENCY.USD}
                         selection={this.state.selection}
                         onSelectionChange={(e) => {

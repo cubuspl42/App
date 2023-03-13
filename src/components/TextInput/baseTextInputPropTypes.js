@@ -46,6 +46,9 @@ const propTypes = {
     /** Forward the inner ref */
     innerRef: PropTypes.func,
 
+    /** Forward the inner text input ref */
+    innerTextInputRef: PropTypes.func,
+
     /** Maximum characters allowed */
     maxLength: PropTypes.number,
 
@@ -98,6 +101,7 @@ const defaultProps = {
     autoGrow: false,
     hideFocusedState: false,
     innerRef: () => {},
+    innerTextInputRef: () => {},
     shouldSaveDraft: false,
     maxLength: null,
     hint: '',

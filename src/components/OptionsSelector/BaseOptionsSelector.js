@@ -270,7 +270,7 @@ class BaseOptionsSelector extends Component {
         const shouldShowDefaultConfirmButton = !this.props.footerContent && defaultConfirmButtonText;
         const textInput = (
             <TextInput
-                ref={el => this.textInput = el}
+                innerTextInputRef={el => this.textInput = el}
                 value={this.props.value}
                 label={this.props.textInputLabel}
                 onChangeText={this.props.onChangeText}

@@ -73,7 +73,7 @@ class BasePasswordPopover extends Component {
                     </Text>
                     <TextInput
                         label={this.props.translate('common.password')}
-                        ref={el => this.passwordInput = el}
+                        innerTextInputRef={el => this.passwordInput = el}
                         secureTextEntry
                         autoCompleteType="password"
                         textContentType="password"

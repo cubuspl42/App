@@ -481,7 +481,7 @@ class EmojiPickerMenu extends Component {
                             label={this.props.translate('common.search')}
                             onChangeText={this.filterEmojis}
                             defaultValue=""
-                            ref={el => this.searchInput = el}
+                            innerTextInputRef={el => this.searchInput = el}
                             autoFocus
                             selectTextOnFocus={this.state.selectTextOnFocus}
                             onSelectionChange={this.onSelectionChange}

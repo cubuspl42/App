@@ -30,7 +30,7 @@ const propTypes = {
     onMouseDown: PropTypes.func,
 
     /** A ref to forward to the Pressable */
-    forwardedRef: PropTypes.oneOfType([
+    innerPressableRef: PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.shape({current: PropTypes.instanceOf(React.Component)}),
     ]),
@@ -41,7 +41,7 @@ const defaultProps = {
     hasError: false,
     disabled: false,
     style: [],
-    forwardedRef: undefined,
+    innerPressableRef: undefined,
     children: null,
     onMouseDown: undefined,
 };
@@ -100,7 +100,7 @@ class Checkbox extends React.Component {
                 onMouseDown={this.props.onMouseDown}
                 onFocus={this.onFocus}
                 onBlur={this.onBlur}
-                ref={this.props.forwardedRef}
+                ref={this.props.innerPressableRef}
                 onPressOut={this.onBlur}
                 style={this.props.style}
                 onKeyDown={this.handleSpaceKey}

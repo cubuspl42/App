@@ -128,7 +128,7 @@ class AddSecondaryLoginPage extends Component {
                             label={this.props.translate(this.formType === CONST.LOGIN_TYPE.PHONE
                                 ? 'common.phoneNumber'
                                 : 'profilePage.emailAddress')}
-                            ref={el => this.phoneNumberInputRef = el}
+                            innerTextInputRef={el => this.phoneNumberInputRef = el}
                             value={this.state.login}
                             onChangeText={this.onSecondaryLoginChange}
                             keyboardType={this.formType === CONST.LOGIN_TYPE.PHONE

@@ -6,7 +6,7 @@ import * as CurrencySymbolUtils from '../libs/CurrencySymbolUtils';
 
 const propTypes = {
     /** A ref to forward to amount text input */
-    forwardedRef: PropTypes.oneOfType([
+    innerTextInputRef: PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.shape({current: PropTypes.instanceOf(React.Component)}),
     ]),
@@ -40,14 +40,14 @@ const propTypes = {
 };
 
 const defaultProps = {
-    forwardedRef: undefined,
+    innerTextInputRef: undefined,
     onChangeAmount: () => {},
     onCurrencyButtonPress: () => {},
     selection: undefined,
     onSelectionChange: () => {},
 };
 
-function TextInputWithCurrencySymbol(props) {
+export default function TextInputWithCurrencySymbol(props) {
     const currencySymbol = CurrencySymbolUtils.getLocalizedCurrencySymbol(props.preferredLocale, props.selectedCurrencyCode);
     const isCurrencySymbolLTR = CurrencySymbolUtils.isCurrencySymbolLTR(props.preferredLocale, props.selectedCurrencyCode);
 
@@ -63,7 +63,7 @@ function TextInputWithCurrencySymbol(props) {
             formattedAmount={props.formattedAmount}
             onChangeAmount={props.onChangeAmount}
             placeholder={props.placeholder}
-            ref={props.forwardedRef}
+            innerTextInputRef={props.innerTextInputRef}
             selection={props.selection}
             onSelectionChange={props.onSelectionChange}
         />
@@ -89,8 +89,3 @@ function TextInputWithCurrencySymbol(props) {
 TextInputWithCurrencySymbol.propTypes = propTypes;
 TextInputWithCurrencySymbol.defaultProps = defaultProps;
 TextInputWithCurrencySymbol.displayName = 'TextInputWithCurrencySymbol';
-
-export default React.forwardRef((props, ref) => (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <TextInputWithCurrencySymbol {...props} forwardedRef={ref} />
-));

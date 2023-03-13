@@ -168,7 +168,7 @@ class PasswordForm extends React.Component {
             <>
                 <View style={[styles.mv3]}>
                     <TextInput
-                        ref={el => this.inputPassword = el}
+                        innerTextInputRef={el => this.inputPassword = el}
                         label={this.props.translate('common.password')}
                         secureTextEntry
                         autoCompleteType={ComponentUtils.PASSWORD_AUTOCOMPLETE_TYPE}
@@ -196,7 +196,7 @@ class PasswordForm extends React.Component {
                 {this.props.account.requiresTwoFactorAuth && (
                     <View style={[styles.mv3]}>
                         <TextInput
-                            ref={el => this.input2FA = el}
+                            innerTextInputRef={el => this.input2FA = el}
                             label={this.props.translate('passwordForm.twoFactorCode')}
                             value={this.state.twoFactorAuthCode}
                             placeholder={this.props.translate('passwordForm.requiredWhen2FAEnabled')}

@@ -191,7 +191,7 @@ class BaseValidateCodeForm extends React.Component {
                 {this.props.account.requiresTwoFactorAuth ? (
                     <View style={[styles.mv3]}>
                         <TextInput
-                            ref={el => this.input2FA = el}
+                            innerTextInputRef={el => this.input2FA = el}
                             label={this.props.translate('validateCodeForm.twoFactorCode')}
                             value={this.state.twoFactorAuthCode}
                             placeholder={this.props.translate('validateCodeForm.requiredWhen2FAEnabled')}
@@ -209,7 +209,7 @@ class BaseValidateCodeForm extends React.Component {
                         <TextInput
                             autoComplete={this.props.autoComplete}
                             textContentType="oneTimeCode"
-                            ref={el => this.inputValidateCode = el}
+                            innerTextInputRef={el => this.inputValidateCode = el}
                             label={this.props.translate('common.magicCode')}
                             nativeID="validateCode"
                             name="validateCode"
