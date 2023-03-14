@@ -97,8 +97,10 @@ class Picker extends PureComponent {
             isOpen: false,
         };
 
+        this.root = null;
         this.onInputChange = this.onInputChange.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -154,12 +156,16 @@ class Picker extends PureComponent {
         focusedTextInput.blur();
     }
 
+    getScrollTarget() {
+        return this.root;
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
         return (
             <>
-                <View
+                <View ref={el => this.root = el}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,

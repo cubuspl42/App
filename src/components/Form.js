@@ -316,10 +316,14 @@ class Form extends React.Component {
 
                         input.bringAttention();
 
+                        const scrollTarget = input.getScrollTarget();
+
+                        const formRef = this.formRef.current;
+
                         // We subtract 10 to scroll slightly above the input
-                        if (input.measureLayout && typeof input.measureLayout === 'function') {
-                            input.measureLayout(this.formRef.current, (x, y) => this.formRef.current.scrollTo({y: y - 10, animated: false}));
-                        }
+                        scrollTarget.measureLayout(formRef, (x, y) => {
+                             formRef.scrollTo({y: y - 10, animated: false});
+                        });
                     }}
                     containerStyles={[styles.mh0, styles.mt5, styles.flex1]}
                     enabledWhenOffline={this.props.enabledWhenOffline}

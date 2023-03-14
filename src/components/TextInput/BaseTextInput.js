@@ -51,6 +51,7 @@ class BaseTextInput extends Component {
         this.dismissKeyboardWhenBackgrounded = this.dismissKeyboardWhenBackgrounded.bind(this);
         this.storePrefixLayoutDimensions = this.storePrefixLayoutDimensions.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
     }
 
     componentDidMount() {
@@ -212,6 +213,10 @@ class BaseTextInput extends Component {
         }
 
         this.input.focus();
+    }
+
+    getScrollTarget() {
+        return this.input;
     }
 
     render() {

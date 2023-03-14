@@ -77,6 +77,7 @@ class CheckboxWithLabel extends React.Component {
 
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
     }
 
     toggleCheckbox() {
@@ -90,6 +91,10 @@ class CheckboxWithLabel extends React.Component {
         }
 
         this.pressable.focus();
+    }
+
+    getScrollTarget() {
+        return this.pressable;
     }
 
     render() {

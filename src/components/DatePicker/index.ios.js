@@ -29,11 +29,13 @@ class DatePicker extends React.Component {
             selectedDate: props.value || props.defaultValue ? moment(props.value || props.defaultValue).toDate() : new Date(),
         };
 
+        this.inputRef = null;
         this.showPicker = this.showPicker.bind(this);
         this.reset = this.reset.bind(this);
         this.selectDate = this.selectDate.bind(this);
         this.updateLocalDate = this.updateLocalDate.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
     }
 
     showPicker() {
@@ -81,12 +83,17 @@ class DatePicker extends React.Component {
         this.showPicker();
     }
 
+    getScrollTarget() {
+        return this.inputRef;
+    }
+
     render() {
         const dateAsText = this.props.value || this.props.defaultValue ? moment(this.props.value || this.props.defaultValue).format(CONST.DATE.MOMENT_FORMAT_STRING) : '';
         return (
             <>
                 <TextInput
                     forceActiveLabel
+                    innerTextInputRef={el => this.inputRef = el}
                     label={this.props.label}
                     value={dateAsText}
                     placeholder={this.props.placeholder}

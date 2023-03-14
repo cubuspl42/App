@@ -16,9 +16,11 @@ class DatePicker extends React.Component {
             isPickerVisible: false,
         };
 
+        this.inputRef = null;
         this.showPicker = this.showPicker.bind(this);
         this.setDate = this.setDate.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
     }
 
     /**
@@ -43,12 +45,17 @@ class DatePicker extends React.Component {
         this.showPicker();
     }
 
+    getScrollTarget() {
+        return this.inputRef;
+    }
+
     render() {
         const dateAsText = this.props.value || this.props.defaultValue ? moment(this.props.value || this.props.defaultValue).format(CONST.DATE.MOMENT_FORMAT_STRING) : '';
 
         return (
             <>
                 <TextInput
+                    innerTextInputRef={el => this.inputRef = el}
                     label={this.props.label}
                     value={dateAsText}
                     forceActiveLabel

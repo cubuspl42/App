@@ -16,9 +16,11 @@ class DatePicker extends React.Component {
     constructor(props) {
         super(props);
 
+        this.inputRef = null;
         this.setDate = this.setDate.bind(this);
         this.showDatepicker = this.showDatepicker.bind(this);
         this.bringAttention = this.bringAttention.bind(this);
+        this.getScrollTarget = this.getScrollTarget.bind(this);
 
         /* We're using uncontrolled input otherwise it wont be possible to
         * raise change events with a date value - each change will produce a date
@@ -67,6 +69,10 @@ class DatePicker extends React.Component {
 
     bringAttention() {
         this.showDatepicker();
+    }
+
+    getScrollTarget() {
+        return this.inputRef;
     }
 
     render() {

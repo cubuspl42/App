@@ -176,6 +176,9 @@ const AddressSearch = (props) => {
 
             input.current.focus();
         },
+        getScrollTarget() {
+            return input.current;
+        },
     }));
 
     return (
