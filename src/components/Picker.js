@@ -67,14 +67,6 @@ const propTypes = {
 
     /** Callback called when click or tap out of Picker */
     onBlur: PropTypes.func,
-
-    /** Ref to be forwarded to RNPickerSelect component, provided by forwardRef, not parent component. */
-    innerRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({
-            current: PropTypes.element,
-        }),
-    ]),
 };
 
 const defaultProps = {
@@ -96,7 +88,6 @@ const defaultProps = {
         />
     ),
     onBlur: () => {},
-    innerRef: () => {},
 };
 
 class Picker extends PureComponent {
@@ -106,7 +97,9 @@ class Picker extends PureComponent {
             isOpen: false,
         };
 
+        this.root = null;
         this.onInputChange = this.onInputChange.bind(this);
+        this.measureLayout = this.measureLayout.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -151,12 +144,23 @@ class Picker extends PureComponent {
         this.props.onInputChange(this.props.items[0].value, 0);
     }
 
+    measureLayout(relativeToNativeComponentRef, onSuccess, onFail) {
+        if (!this.root) {
+            return;
+        }
+
+        // Forward the call to the root `View`, as it's the only element around
+        // that provides this method
+        this.root.measureLayout(relativeToNativeComponentRef, onSuccess, onFail)
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
         return (
             <>
                 <View
+                    ref={el => this.root = el}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,
@@ -194,12 +198,6 @@ class Picker extends PureComponent {
                                 this.props.onBlur();
                             },
                         }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
-                        }}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
                     />
@@ -215,4 +213,4 @@ Picker.defaultProps = defaultProps;
 Picker.contextType = ScrollContext;
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-export default React.forwardRef((props, ref) => <Picker {...props} innerRef={ref} key={props.inputID} />);
+export default React.forwardRef((props, ref) => <Picker {...props} ref={ref} key={props.inputID} />);
