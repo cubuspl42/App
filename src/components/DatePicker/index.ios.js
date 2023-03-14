@@ -33,6 +33,7 @@ class DatePicker extends React.Component {
         this.reset = this.reset.bind(this);
         this.selectDate = this.selectDate.bind(this);
         this.updateLocalDate = this.updateLocalDate.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
     }
 
     showPicker() {
@@ -76,6 +77,10 @@ class DatePicker extends React.Component {
         this.setState({selectedDate});
     }
 
+    bringAttention() {
+        this.showPicker();
+    }
+
     render() {
         const dateAsText = this.props.value || this.props.defaultValue ? moment(this.props.value || this.props.defaultValue).format(CONST.DATE.MOMENT_FORMAT_STRING) : '';
         return (
@@ -92,19 +97,6 @@ class DatePicker extends React.Component {
                     editable={false}
                     disabled={this.props.disabled}
                     onBlur={this.props.onBlur}
-                    ref={(el) => {
-                        if (!_.isFunction(this.props.innerRef)) {
-                            return;
-                        }
-                        if (el && el.focus && typeof el.focus === 'function') {
-                            let inputRef = {...el};
-                            inputRef = {...inputRef, focus: this.showPicker};
-                            this.props.innerRef(inputRef);
-                            return;
-                        }
-
-                        this.props.innerRef(el);
-                    }}
                 />
                 <Popover
                     isVisible={this.state.isPickerVisible}
@@ -157,7 +149,4 @@ DatePicker.defaultProps = defaultProps;
 export default compose(
     withLocalize,
     withKeyboardState,
-)(React.forwardRef((props, ref) => (
-    /* eslint-disable-next-line react/jsx-props-no-spreading */
-    <DatePicker {...props} innerRef={ref} />
-)));
+)(DatePicker);

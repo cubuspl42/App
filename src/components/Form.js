@@ -310,15 +310,15 @@ class Form extends React.Component {
                     onSubmit={this.submit}
                     onFixTheErrorsLinkPressed={() => {
                         const errors = !_.isEmpty(this.state.errors) ? this.state.errors : this.props.formState.errorFields;
-                        const focusKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
-                        const focusInput = this.inputRefs[focusKey];
-                        if (focusInput.focus && typeof focusInput.focus === 'function') {
-                            focusInput.focus();
-                        }
+
+                        const inputKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
+                        const input = this.inputRefs[inputKey];
+
+                        input.bringAttention();
 
                         // We subtract 10 to scroll slightly above the input
-                        if (focusInput.measureLayout && typeof focusInput.measureLayout === 'function') {
-                            focusInput.measureLayout(this.formRef.current, (x, y) => this.formRef.current.scrollTo({y: y - 10, animated: false}));
+                        if (input.measureLayout && typeof input.measureLayout === 'function') {
+                            input.measureLayout(this.formRef.current, (x, y) => this.formRef.current.scrollTo({y: y - 10, animated: false}));
                         }
                     }}
                     containerStyles={[styles.mh0, styles.mt5, styles.flex1]}

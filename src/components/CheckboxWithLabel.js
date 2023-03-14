@@ -46,9 +46,6 @@ const propTypes = {
     /** The default value for the checkbox */
     defaultValue: PropTypes.bool,
 
-    /** React ref being forwarded to the Checkbox input */
-    forwardedRef: PropTypes.func,
-
     /** The ID used to uniquely identify the input in a Form */
     /* eslint-disable-next-line react/no-unused-prop-types */
     inputID: PropTypes.string,
@@ -68,22 +65,31 @@ const defaultProps = {
     isChecked: false,
     value: false,
     defaultValue: false,
-    forwardedRef: () => {},
 };
 
 class CheckboxWithLabel extends React.Component {
     constructor(props) {
         super(props);
 
+        this.pressable = null;
         this.isChecked = props.value || props.defaultValue || props.isChecked;
         this.LabelComponent = props.LabelComponent;
 
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
     }
 
     toggleCheckbox() {
         this.props.onInputChange(!this.isChecked);
         this.isChecked = !this.isChecked;
+    }
+
+    bringAttention() {
+        if (!this.pressable) {
+            return;
+        }
+
+        this.pressable.focus();
     }
 
     render() {
@@ -95,7 +101,7 @@ class CheckboxWithLabel extends React.Component {
                         onPress={this.toggleCheckbox}
                         label={this.props.label}
                         hasError={Boolean(this.props.errorText)}
-                        innerPressableRef={this.props.forwardedRef}
+                        innerPressableRef={el => this.pressable = el}
                     />
                     <TouchableOpacity
                         focusable={false}
@@ -131,5 +137,5 @@ CheckboxWithLabel.defaultProps = defaultProps;
 
 export default React.forwardRef((props, ref) => (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <CheckboxWithLabel {...props} forwardedRef={ref} />
+    <CheckboxWithLabel {...props} ref={ref} />
 ));

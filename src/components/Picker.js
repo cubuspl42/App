@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import React, {PureComponent} from 'react';
-import {View} from 'react-native';
+import {TextInput, View} from 'react-native';
 import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import Icon from './Icon';
@@ -67,14 +67,6 @@ const propTypes = {
 
     /** Callback called when click or tap out of Picker */
     onBlur: PropTypes.func,
-
-    /** Ref to be forwarded to RNPickerSelect component, provided by forwardRef, not parent component. */
-    innerRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({
-            current: PropTypes.element,
-        }),
-    ]),
 };
 
 const defaultProps = {
@@ -96,7 +88,6 @@ const defaultProps = {
         />
     ),
     onBlur: () => {},
-    innerRef: () => {},
 };
 
 class Picker extends PureComponent {
@@ -107,6 +98,7 @@ class Picker extends PureComponent {
         };
 
         this.onInputChange = this.onInputChange.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -149,6 +141,17 @@ class Picker extends PureComponent {
             return;
         }
         this.props.onInputChange(this.props.items[0].value, 0);
+    }
+
+    bringAttention() {
+        const focusedTextInput = TextInput.State.currentlyFocusedInput();
+
+        if (!focusedTextInput) {
+            return;
+        }
+
+        // As there's no clean portable way to focus a picker, the least we can do is to blur a focused text input
+        focusedTextInput.blur();
     }
 
     render() {
@@ -194,12 +197,6 @@ class Picker extends PureComponent {
                                 this.props.onBlur();
                             },
                         }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
-                        }}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
                     />
@@ -215,4 +212,4 @@ Picker.defaultProps = defaultProps;
 Picker.contextType = ScrollContext;
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-export default React.forwardRef((props, ref) => <Picker {...props} innerRef={ref} key={props.inputID} />);
+export default React.forwardRef((props, ref) => <Picker {...props} ref={ref} key={props.inputID} />);

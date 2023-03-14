@@ -18,6 +18,7 @@ class DatePicker extends React.Component {
 
         this.showPicker = this.showPicker.bind(this);
         this.setDate = this.setDate.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
     }
 
     /**
@@ -38,6 +39,10 @@ class DatePicker extends React.Component {
         this.setState({isPickerVisible: true});
     }
 
+    bringAttention() {
+        this.showPicker();
+    }
+
     render() {
         const dateAsText = this.props.value || this.props.defaultValue ? moment(this.props.value || this.props.defaultValue).format(CONST.DATE.MOMENT_FORMAT_STRING) : '';
 
@@ -55,19 +60,6 @@ class DatePicker extends React.Component {
                     editable={false}
                     disabled={this.props.disabled}
                     onBlur={this.props.onBlur}
-                    ref={(el) => {
-                        if (!_.isFunction(this.props.innerRef)) {
-                            return;
-                        }
-                        if (el && el.focus && typeof el.focus === 'function') {
-                            let inputRef = {...el};
-                            inputRef = {...inputRef, focus: this.showPicker};
-                            this.props.innerRef(inputRef);
-                            return;
-                        }
-
-                        this.props.innerRef(el);
-                    }}
                 />
                 {this.state.isPickerVisible && (
                     <RNDatePicker
@@ -86,7 +78,4 @@ class DatePicker extends React.Component {
 DatePicker.propTypes = propTypes;
 DatePicker.defaultProps = defaultProps;
 
-export default React.forwardRef((props, ref) => (
-    /* eslint-disable-next-line react/jsx-props-no-spreading */
-    <DatePicker {...props} innerRef={ref} />
-));
+export default DatePicker;

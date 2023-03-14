@@ -18,6 +18,7 @@ class DatePicker extends React.Component {
 
         this.setDate = this.setDate.bind(this);
         this.showDatepicker = this.showDatepicker.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
 
         /* We're using uncontrolled input otherwise it wont be possible to
         * raise change events with a date value - each change will produce a date
@@ -64,11 +65,14 @@ class DatePicker extends React.Component {
         this.inputRef.click();
     }
 
+    bringAttention() {
+        this.showDatepicker();
+    }
+
     render() {
         return (
             <TextInput
                 forceActiveLabel
-                ref={this.props.innerRef}
                 innerTextInputRef={el => this.inputRef = el}
                 onFocus={this.showDatepicker}
                 label={this.props.label}
@@ -88,7 +92,4 @@ class DatePicker extends React.Component {
 DatePicker.propTypes = datePickerPropTypes;
 DatePicker.defaultProps = defaultProps;
 
-export default withWindowDimensions(React.forwardRef((props, ref) => (
-    /* eslint-disable-next-line react/jsx-props-no-spreading */
-    <DatePicker {...props} innerRef={ref} />
-)));
+export default withWindowDimensions(DatePicker);

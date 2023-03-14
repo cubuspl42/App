@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import React, {useState} from 'react';
+import React, {useImperativeHandle, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import {LogBox, ScrollView, View} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
@@ -90,6 +90,8 @@ const defaultProps = {
 // Reference: https://github.com/FaridSafi/react-native-google-places-autocomplete/issues/609#issuecomment-886133839
 const AddressSearch = (props) => {
     const [displayListViewBorder, setDisplayListViewBorder] = useState(false);
+    const input = useRef();
+
     const query = {language: props.preferredLocale, types: 'address'};
     if (props.isLimitedToUSA) {
         query.components = 'country:us';
@@ -166,6 +168,16 @@ const AddressSearch = (props) => {
         }
     };
 
+    useImperativeHandle(props.innerRef, () => ({
+        bringAttention: () => {
+            if (!input.current) {
+                return;
+            }
+
+            input.current.focus();
+        },
+    }));
+
     return (
 
         /*
@@ -203,19 +215,7 @@ const AddressSearch = (props) => {
                     }}
                     textInputProps={{
                         InputComp: TextInput,
-                        ref: (node) => {
-                            if (!props.innerRef) {
-                                return;
-                            }
-
-                            if (_.isFunction(props.innerRef)) {
-                                props.innerRef(node);
-                                return;
-                            }
-
-                            // eslint-disable-next-line no-param-reassign
-                            props.innerRef.current = node;
-                        },
+                        ref: el => input.current = el,
                         label: props.label,
                         containerStyles: props.containerStyles,
                         errorText: props.errorText,

@@ -50,6 +50,7 @@ class BaseTextInput extends Component {
         this.togglePasswordVisibility = this.togglePasswordVisibility.bind(this);
         this.dismissKeyboardWhenBackgrounded = this.dismissKeyboardWhenBackgrounded.bind(this);
         this.storePrefixLayoutDimensions = this.storePrefixLayoutDimensions.bind(this);
+        this.bringAttention = this.bringAttention.bind(this);
     }
 
     componentDidMount() {
@@ -205,6 +206,14 @@ class BaseTextInput extends Component {
         this.setState({prefixWidth: Math.abs(event.nativeEvent.layout.width)});
     }
 
+    bringAttention() {
+        if (!this.input) {
+            return;
+        }
+
+        this.input.focus();
+    }
+
     render() {
         // eslint-disable-next-line react/forbid-foreign-prop-types
         const inputProps = _.omit(this.props, _.keys(baseTextInputPropTypes.propTypes));
@@ -276,10 +285,9 @@ class BaseTextInput extends Component {
                                         </View>
                                     )}
                                     <RNTextInput
-                                        ref={(ref) => {
-                                            if (typeof this.props.innerRef === 'function') { this.props.innerRef(ref); }
-                                            if (typeof this.props.innerTextInputRef === 'function') { this.props.innerTextInputRef(ref); }
-                                            this.input = ref;
+                                        ref={(node) => {
+                                            if (typeof this.props.innerTextInputRef === 'function') { this.props.innerTextInputRef(node); }
+                                            this.input = node;
                                         }}
                                         // eslint-disable-next-line
                                         {...inputProps}
