@@ -157,6 +157,7 @@ class Picker extends PureComponent {
         return (
             <>
                 <View
+                    ref={this.props.innerRef}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,
@@ -193,12 +194,6 @@ class Picker extends PureComponent {
                                 this.setState({isOpen: false});
                                 this.props.onBlur();
                             },
-                        }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
                         }}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}

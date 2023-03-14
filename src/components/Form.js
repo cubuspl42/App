@@ -1,6 +1,6 @@
 import lodashGet from 'lodash/get';
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import {withOnyx} from 'react-native-onyx';
@@ -106,6 +106,8 @@ class Form extends React.Component {
         };
 
         this.formRef = React.createRef(null);
+        this.formContentRef = React.createRef(null);
+
         this.inputRefs = {};
         this.touchedInputs = {};
 
@@ -312,13 +314,21 @@ class Form extends React.Component {
                         const errors = !_.isEmpty(this.state.errors) ? this.state.errors : this.props.formState.errorFields;
                         const focusKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
                         const focusInput = this.inputRefs[focusKey];
-                        if (focusInput.focus && typeof focusInput.focus === 'function') {
-                            focusInput.focus();
+
+                        const focus = focusInput.focus;
+
+                        if (focus && typeof focus === 'function') {
+                            focus();
                         }
 
-                        // We subtract 10 to scroll slightly above the input
                         if (focusInput.measureLayout && typeof focusInput.measureLayout === 'function') {
-                            focusInput.measureLayout(this.formRef.current, (x, y) => this.formRef.current.scrollTo({y: y - 10, animated: false}));
+                            const formRef = this.formRef.current;
+                            const formContentRef = this.formContentRef.current;
+
+                            focusInput.measureLayout(formContentRef, (x, y) => {
+                                // We subtract 10 to scroll slightly above the input
+                                formRef.scrollTo({y: y - 10, animated: false});
+                            });
                         }
                     }}
                     containerStyles={[styles.mh0, styles.mt5, styles.flex1]}
@@ -328,6 +338,12 @@ class Form extends React.Component {
                 />
                 )}
             </FormSubmit>
+        );
+
+        const scrollViewContentWrapped = safeAreaPaddingBottomStyle => (
+            <View ref={this.formContentRef}>
+                {scrollViewContent(safeAreaPaddingBottomStyle)}
+            </View>
         );
 
         return (
@@ -340,7 +356,7 @@ class Form extends React.Component {
                         scrollToOverflowEnabled={this.props.scrollToOverflowEnabled}
                         ref={this.formRef}
                     >
-                        {scrollViewContent(safeAreaPaddingBottomStyle)}
+                        {scrollViewContentWrapped(safeAreaPaddingBottomStyle)}
                     </ScrollViewWithContext>
                 ) : (
                     <ScrollView
@@ -350,7 +366,7 @@ class Form extends React.Component {
                         scrollToOverflowEnabled={this.props.scrollToOverflowEnabled}
                         ref={this.formRef}
                     >
-                        {scrollViewContent(safeAreaPaddingBottomStyle)}
+                        {scrollViewContentWrapped(safeAreaPaddingBottomStyle)}
                     </ScrollView>
                 ))}
             </SafeAreaConsumer>

@@ -178,6 +178,7 @@ class DebitCardPage extends Component {
                             inputID="addressState"
                         />
                     </View>
+                    <View style={{height: 1000}}/>
                     {!Permissions.canUsePasswordlessLogins(this.props.betas) && (
                         <View style={[styles.mt4]}>
                             <TextInput
