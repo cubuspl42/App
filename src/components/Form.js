@@ -1,6 +1,6 @@
 import lodashGet from 'lodash/get';
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import {withOnyx} from 'react-native-onyx';
@@ -299,39 +299,41 @@ class Form extends React.Component {
 
     render() {
         const scrollViewContent = safeAreaPaddingBottomStyle => (
-            <FormSubmit style={StyleSheet.flatten([this.props.style, safeAreaPaddingBottomStyle])} onSubmit={this.submit}>
-                {this.childrenWrapperWithProps(_.isFunction(this.props.children) ? this.props.children({inputValues: this.state.inputValues}) : this.props.children)}
-                {this.props.isSubmitButtonVisible && (
-                <FormAlertWithSubmitButton
-                    buttonText={this.props.submitButtonText}
-                    isAlertVisible={_.size(this.state.errors) > 0 || Boolean(this.getErrorMessage()) || !_.isEmpty(this.props.formState.errorFields)}
-                    isLoading={this.props.formState.isLoading}
-                    message={_.isEmpty(this.props.formState.errorFields) ? this.getErrorMessage() : null}
-                    onSubmit={this.submit}
-                    onFixTheErrorsLinkPressed={() => {
-                        const errors = !_.isEmpty(this.state.errors) ? this.state.errors : this.props.formState.errorFields;
+            <View>
+                <FormSubmit style={StyleSheet.flatten([this.props.style, safeAreaPaddingBottomStyle])} onSubmit={this.submit}>
+                    {this.childrenWrapperWithProps(_.isFunction(this.props.children) ? this.props.children({inputValues: this.state.inputValues}) : this.props.children)}
+                    {this.props.isSubmitButtonVisible && (
+                    <FormAlertWithSubmitButton
+                        buttonText={this.props.submitButtonText}
+                        isAlertVisible={_.size(this.state.errors) > 0 || Boolean(this.getErrorMessage()) || !_.isEmpty(this.props.formState.errorFields)}
+                        isLoading={this.props.formState.isLoading}
+                        message={_.isEmpty(this.props.formState.errorFields) ? this.getErrorMessage() : null}
+                        onSubmit={this.submit}
+                        onFixTheErrorsLinkPressed={() => {
+                            const errors = !_.isEmpty(this.state.errors) ? this.state.errors : this.props.formState.errorFields;
 
-                        const inputKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
-                        const input = this.inputRefs[inputKey];
+                            const inputKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
+                            const input = this.inputRefs[inputKey];
 
-                        input.bringAttention();
+                            input.bringAttention();
 
-                        const scrollTarget = input.getScrollTarget();
+                            const scrollTarget = input.getScrollTarget();
 
-                        const formRef = this.formRef.current;
+                            const formRef = this.formRef.current;
 
-                        // We subtract 10 to scroll slightly above the input
-                        scrollTarget.measureLayout(formRef, (x, y) => {
-                             formRef.scrollTo({y: y - 10, animated: false});
-                        });
-                    }}
-                    containerStyles={[styles.mh0, styles.mt5, styles.flex1]}
-                    enabledWhenOffline={this.props.enabledWhenOffline}
-                    isSubmitActionDangerous={this.props.isSubmitActionDangerous}
-                    disablePressOnEnter
-                />
-                )}
-            </FormSubmit>
+                            // We subtract 10 to scroll slightly above the input
+                            scrollTarget.measureLayout(formRef, (x, y) => {
+                                 formRef.scrollTo({y: y - 10, animated: false});
+                            });
+                        }}
+                        containerStyles={[styles.mh0, styles.mt5, styles.flex1]}
+                        enabledWhenOffline={this.props.enabledWhenOffline}
+                        isSubmitActionDangerous={this.props.isSubmitActionDangerous}
+                        disablePressOnEnter
+                    />
+                    )}
+                </FormSubmit>
+            </View>
         );
 
         return (
