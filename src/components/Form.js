@@ -311,6 +311,14 @@ class Form extends React.Component {
                         message={_.isEmpty(this.props.formState.errorFields) ? this.getErrorMessage() : null}
                         onSubmit={this.submit}
                         onFixTheErrorsLinkPressed={() => {
+                            // Proactively blur all inputs, as we can't expect that all the input we'd like to focus
+                            // actually supports focusing (at least pickers don't)
+                            _.values(this.inputRefs).forEach((input) => {
+                                if (input.blur && typeof input.blur === 'function') {
+                                    input.blur();
+                                }
+                            });
+
                             const errors = !_.isEmpty(this.state.errors) ? this.state.errors : this.props.formState.errorFields;
                             const focusKey = _.find(_.keys(this.inputRefs), key => _.keys(errors).includes(key));
                             const focusInput = this.inputRefs[focusKey];
