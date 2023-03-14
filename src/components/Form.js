@@ -106,6 +106,7 @@ class Form extends React.Component {
         };
 
         this.formRef = React.createRef(null);
+        this.formContentRef = React.createRef(null);
         this.inputRefs = {};
         this.touchedInputs = {};
 
@@ -299,7 +300,7 @@ class Form extends React.Component {
 
     render() {
         const scrollViewContent = safeAreaPaddingBottomStyle => (
-            <View>
+            <View ref={this.formContentRef}>
                 <FormSubmit style={StyleSheet.flatten([this.props.style, safeAreaPaddingBottomStyle])} onSubmit={this.submit}>
                     {this.childrenWrapperWithProps(_.isFunction(this.props.children) ? this.props.children({inputValues: this.state.inputValues}) : this.props.children)}
                     {this.props.isSubmitButtonVisible && (
@@ -320,9 +321,10 @@ class Form extends React.Component {
                             const scrollTarget = input.getScrollTarget();
 
                             const formRef = this.formRef.current;
+                            const formContentRef = this.formContentRef.current;
 
                             // We subtract 10 to scroll slightly above the input
-                            scrollTarget.measureLayout(formRef, (x, y) => {
+                            scrollTarget.measureLayout(formContentRef, (x, y) => {
                                  formRef.scrollTo({y: y - 10, animated: false});
                             });
                         }}
