@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React from 'react';
 import {View, Pressable} from 'react-native';
 import PropTypes from 'prop-types';
@@ -28,12 +29,6 @@ const propTypes = {
 
     /** Callback that is called when mousedown is triggered. */
     onMouseDown: PropTypes.func,
-
-    /** A ref to forward to the Pressable */
-    forwardedRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({current: PropTypes.instanceOf(React.Component)}),
-    ]),
 };
 
 const defaultProps = {
@@ -41,7 +36,6 @@ const defaultProps = {
     hasError: false,
     disabled: false,
     style: [],
-    forwardedRef: undefined,
     children: null,
     onMouseDown: undefined,
 };
@@ -49,25 +43,29 @@ const defaultProps = {
 class Checkbox extends React.Component {
     constructor(props) {
         super(props);
+
+        this.root = null;
         this.state = {
             isFocused: false,
         };
 
-        this.onFocus = this.onFocus.bind(this);
-        this.onBlur = this.onBlur.bind(this);
-        this.handleSpaceKey = this.handleSpaceKey.bind(this);
-        this.firePressHandlerOnClick = this.firePressHandlerOnClick.bind(this);
+        this._enterFocus = this._enterFocus.bind(this);
+        this._leaveFocus = this._leaveFocus.bind(this);
+        this._handleSpaceKey = this._handleSpaceKey.bind(this);
+        this._firePressHandlerOnClick = this._firePressHandlerOnClick.bind(this);
+        this.focus = this.focus.bind(this);
+        this.blur = this.blur.bind(this);
     }
 
-    onFocus() {
+    _enterFocus() {
         this.setState({isFocused: true});
     }
 
-    onBlur() {
+    _leaveFocus() {
         this.setState({isFocused: false});
     }
 
-    handleSpaceKey(event) {
+    _handleSpaceKey(event) {
         if (event.code !== 'Space') {
             return;
         }
@@ -75,7 +73,7 @@ class Checkbox extends React.Component {
         this.props.onPress();
     }
 
-    firePressHandlerOnClick(event) {
+    _firePressHandlerOnClick(event) {
         // Pressable can be triggered with Enter key and by a click. As this is a checkbox,
         // We do not want to toggle it, when Enter key is pressed.
         if (event.type && event.type !== 'click') {
@@ -86,24 +84,36 @@ class Checkbox extends React.Component {
 
         // If checkbox is checked and focused, make sure it's unfocused when pressed.
         if (this.state.isFocused && wasChecked) {
-            this.onBlur();
+            this._leaveFocus();
         }
 
         this.props.onPress();
+    }
+
+    focus() {
+        this._enterFocus();
+    }
+
+    blur() {
+        this._leaveFocus();
+    }
+
+    measureLayout(...args) {
+        return this.root.measureLayout(...args);
     }
 
     render() {
         return (
             <Pressable
                 disabled={this.props.disabled}
-                onPress={this.firePressHandlerOnClick}
+                onPress={this._firePressHandlerOnClick}
                 onMouseDown={this.props.onMouseDown}
-                onFocus={this.onFocus}
-                onBlur={this.onBlur}
-                ref={this.props.forwardedRef}
-                onPressOut={this.onBlur}
+                onFocus={this._enterFocus}
+                onBlur={this._leaveFocus}
+                ref={el => this.root = el}
+                onPressOut={this._leaveFocus}
                 style={this.props.style}
-                onKeyDown={this.handleSpaceKey}
+                onKeyDown={this._handleSpaceKey}
                 accessibilityRole="checkbox"
                 accessibilityState={{
                     checked: this.props.isChecked,

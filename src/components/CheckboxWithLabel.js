@@ -95,7 +95,7 @@ class CheckboxWithLabel extends React.Component {
                         onPress={this.toggleCheckbox}
                         label={this.props.label}
                         hasError={Boolean(this.props.errorText)}
-                        forwardedRef={this.props.forwardedRef}
+                        ref={this.props.forwardedRef}
                     />
                     <TouchableOpacity
                         focusable={false}
