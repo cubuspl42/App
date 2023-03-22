@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {ScrollView} from 'react-native';
 import {withOnyx} from 'react-native-onyx';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
+import _ from 'lodash';
 import HeaderWithCloseButton from '../../components/HeaderWithCloseButton';
 import Navigation from '../../libs/Navigation/Navigation';
 import ScreenWrapper from '../../components/ScreenWrapper';
@@ -90,6 +90,38 @@ function dismissWorkspaceError(policyID, pendingAction) {
     throw new Error('Not implemented');
 }
 
+/**
+ * Protect the callback from being called twice or more in case the callback
+ * causes a long-running task
+ *
+ * @param {Function} callback
+ * @returns {Function} a wrapped callback protected from duplicated calls
+ */
+function protect(callback) {
+    // A flag used to discard reentrant calls
+    let isBlocked = false;
+
+    return () => {
+        // Drop a reentrant call
+        if (!isBlocked) {
+            isBlocked = true;
+
+            callback();
+
+            // Defer to escape the long-running task (this is required!)
+            _.defer(() => {
+                // Defer once more, so all the events that happened during the
+                // long-running task (which might cause reentrancy) are
+                // processed before we unblock
+                _.defer(() => {
+                    // Allow new calls from now on
+                    isBlocked = false;
+                });
+            });
+        }
+    };
+}
+
 class WorkspacesListPage extends Component {
     constructor(props) {
         super(props);
@@ -97,6 +129,8 @@ class WorkspacesListPage extends Component {
         this.getWalletBalance = this.getWalletBalance.bind(this);
         this.getWorkspaces = this.getWorkspaces.bind(this);
         this.getMenuItem = this.getMenuItem.bind(this);
+
+        this.createWorkspace = protect(() => Policy.createWorkspace());
     }
 
     /**
@@ -196,7 +230,7 @@ class WorkspacesListPage extends Component {
                     <Button
                         success
                         text={this.props.translate('workspace.new.newWorkspace')}
-                        onPress={() => Policy.createWorkspace()}
+                        onPress={this.createWorkspace}
                     />
                 </FixedFooter>
             </ScreenWrapper>
