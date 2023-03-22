@@ -219,12 +219,7 @@ class Picker extends PureComponent {
                                 },
                             ),
                         }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
-                        }}
+                        ref={this.props.innerRef}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
                     />
