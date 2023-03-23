@@ -65,16 +65,11 @@ const propTypes = {
     /** An icon to display with the picker */
     icon: PropTypes.func,
 
+    /** Whether we should forward the focus/blur calls to the inner picker * */
+    shouldFocusPicker: PropTypes.bool,
+
     /** Callback called when click or tap out of Picker */
     onBlur: PropTypes.func,
-
-    /** Ref to be forwarded to RNPickerSelect component, provided by forwardRef, not parent component. */
-    innerRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({
-            current: PropTypes.element,
-        }),
-    ]),
 
     /** Additional events passed to the core Picker for specific platforms such as web */
     additionalPickerEvents: PropTypes.func,
@@ -98,11 +93,15 @@ const defaultProps = {
             {...(size === 'small' ? {width: styles.pickerSmall().icon.width, height: styles.pickerSmall().icon.height} : {})}
         />
     ),
+    shouldFocusPicker: false,
     onBlur: () => {},
-    innerRef: () => {},
     additionalPickerEvents: () => {},
 };
 
+/**
+ * @property {View} root - a reference to the root View
+ * @property {Object} picker - a reference to @react-native-picker/picker
+ */
 class Picker extends PureComponent {
     constructor(props) {
         super(props);
@@ -113,6 +112,8 @@ class Picker extends PureComponent {
         this.onInputChange = this.onInputChange.bind(this);
         this.enableHighlight = this.enableHighlight.bind(this);
         this.disableHighlight = this.disableHighlight.bind(this);
+        this.focus = this.focus.bind(this);
+        this.measureLayout = this.measureLayout.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -169,12 +170,39 @@ class Picker extends PureComponent {
         });
     }
 
+    /**
+     * Focuses the picker (if configured to do so)
+     *
+     * This method is used by Form
+     */
+    focus() {
+        if (!this.props.shouldFocusPicker) {
+            return;
+        }
+
+        this.picker.focus();
+    }
+
+    /**
+     * Measure the layout of this component
+     *
+     * This method is used by Form when scrolling to the input
+     */
+    measureLayout(...args) {
+        if (!this.root) {
+            return;
+        }
+
+        this.root.measureLayout(...args);
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
         return (
             <>
                 <View
+                    ref={el => this.root = el}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,
@@ -204,8 +232,11 @@ class Picker extends PureComponent {
                         fixAndroidTouchableBug
                         onOpen={this.enableHighlight}
                         onClose={this.disableHighlight}
-                        textInputProps={{allowFontScaling: false}}
+                        textInputProps={{
+                            allowFontScaling: false,
+                        }}
                         pickerProps={{
+                            ref: el => this.picker = el,
                             onFocus: this.enableHighlight,
                             onBlur: () => {
                                 this.disableHighlight();
@@ -218,12 +249,6 @@ class Picker extends PureComponent {
                                     this.disableHighlight();
                                 },
                             ),
-                        }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
                         }}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
@@ -239,5 +264,13 @@ Picker.propTypes = propTypes;
 Picker.defaultProps = defaultProps;
 Picker.contextType = ScrollContext;
 
-// eslint-disable-next-line react/jsx-props-no-spreading
-export default React.forwardRef((props, ref) => <Picker {...props} innerRef={ref} key={props.inputID} />);
+export default React.forwardRef((props, ref) => (
+    <Picker
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+
+        // Forward the ref to Picker, as we implement imperative methods there
+        ref={ref}
+        key={props.inputID}
+    />
+));
