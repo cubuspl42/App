@@ -68,14 +68,6 @@ const propTypes = {
     /** Callback called when click or tap out of Picker */
     onBlur: PropTypes.func,
 
-    /** Ref to be forwarded to RNPickerSelect component, provided by forwardRef, not parent component. */
-    innerRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({
-            current: PropTypes.element,
-        }),
-    ]),
-
     /** Additional events passed to the core Picker for specific platforms such as web */
     additionalPickerEvents: PropTypes.func,
 };
@@ -99,7 +91,6 @@ const defaultProps = {
         />
     ),
     onBlur: () => {},
-    innerRef: () => {},
     additionalPickerEvents: () => {},
 };
 
@@ -109,6 +100,9 @@ class Picker extends PureComponent {
         this.state = {
             isHighlighted: false,
         };
+
+        this.rootRef = null;
+        this.inputRef = null;
 
         this.onInputChange = this.onInputChange.bind(this);
         this.enableHighlight = this.enableHighlight.bind(this);
@@ -169,6 +163,14 @@ class Picker extends PureComponent {
         });
     }
 
+    focus() {
+        this.inputRef.focus();
+    }
+
+    measureLayout(...args) {
+        return this.rootRef.measureLayout(...args);
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
@@ -177,16 +179,17 @@ class Picker extends PureComponent {
             // - focusing any input un-focuses other inputs
             // - focusing doesn't open the picker (which we don't want)
             // - it improves accessibility
-            pickerRef: this.props.innerRef,
+            pickerRef: el => this.inputRef = el,
         } : {
             // On other platforms forward the ref to the internal text input, as text inputs share the global focus
             // state
-            textInputRef: this.props.innerRef,
+            textInputRef: el => this.inputRef = el,
         };
 
         return (
             <>
                 <View
+                    ref={el => this.rootRef = el}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,
@@ -250,4 +253,4 @@ Picker.defaultProps = defaultProps;
 Picker.contextType = ScrollContext;
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-export default React.forwardRef((props, ref) => <Picker {...props} innerRef={ref} key={props.inputID} />);
+export default React.forwardRef((props, ref) => <Picker {...props} ref={ref} key={props.inputID} />);
