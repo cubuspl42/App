@@ -6,7 +6,10 @@ import Hoverable from '../Hoverable';
 import withWindowDimensions from '../withWindowDimensions';
 import {propTypes, defaultProps} from './tooltipPropTypes';
 import TooltipSense from './TooltipSense';
-import makeCancellablePromise from '../../libs/MakeCancellablePromise';
+import * as PromiseUtils from '../../libs/PromiseUtils';
+import * as AnimationUtils from '../../libs/AnimationUtils';
+import * as CallbackUtils from '../../libs/CallbackUtils';
+import * as HandleUtils from '../../libs/HandleUtils';
 import * as DeviceCapabilities from '../../libs/DeviceCapabilities';
 
 class Tooltip extends PureComponent {
@@ -33,36 +36,28 @@ class Tooltip extends PureComponent {
         this.shouldStartShowAnimation = false;
         this.animation = new Animated.Value(0);
         this.hasHoverSupport = DeviceCapabilities.hasHoverSupport();
+        this.syncingPositionHandle = null;
 
-        this.getWrapperPosition = this.getWrapperPosition.bind(this);
+        this.getWrapperBounds = this.getWrapperBounds.bind(this);
         this.showTooltip = this.showTooltip.bind(this);
         this.hideTooltip = this.hideTooltip.bind(this);
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.windowWidth === prevProps.windowWidth && this.props.windowHeight === prevProps.windowHeight) {
-            return;
-        }
-
-        this.getWrapperPositionPromise = makeCancellablePromise(this.getWrapperPosition());
-        this.getWrapperPositionPromise.promise
-            .then(({x, y}) => this.setState({xOffset: x, yOffset: y}));
-    }
-
     componentWillUnmount() {
-        if (!this.getWrapperPositionPromise) {
+        if (!this.syncingPositionHandle) {
             return;
         }
 
-        this.getWrapperPositionPromise.cancel();
+        this.syncingPositionHandle.cancel();
+        this.syncingPositionHandle = null;
     }
 
     /**
-     * Measure the position of the wrapper view relative to the window.
+     * Measure the bounds of the wrapper view relative to the window.
      *
-     * @returns {Promise}
+     * @returns {Promise.<{x: number, y: number, width: number, height: number}>}
      */
-    getWrapperPosition() {
+    getWrapperBounds() {
         return new Promise(((resolve) => {
             // Make sure the wrapper is mounted before attempting to measure it.
             if (this.wrapperView && _.isFunction(this.wrapperView.measureInWindow)) {
@@ -78,6 +73,67 @@ class Tooltip extends PureComponent {
     }
 
     /**
+     * Start syncing the tooltip's position with wrapper's position
+     *
+     * @param {function(): void} onStarted a callback called once bounds are established for the first ime
+     * @returns {Handle} a handle to the syncing process
+     */
+    startSyncingPosition({
+        onStarted,
+    }) {
+        /**
+         * @param {{x: number, y: number, width: number, height: number}} position
+         * @returns {void}
+         */
+        const updatePosition = ({
+            x, y, width, height,
+        }) => {
+            this.setState({
+                wrapperWidth: width,
+                wrapperHeight: height,
+                xOffset: x,
+                yOffset: y,
+            });
+        };
+
+        /**
+         * Function that processes each new bounds, updating the tooltip position and ensuring that onStarted is called
+         * when we got first bounds
+         *
+         * @param {{x: number, y: number, width: number, height: number}} position
+         * @returns {void}
+         */
+        const processWrapperBounds = CallbackUtils.merge(
+            updatePosition,
+            CallbackUtils.calledOnce((_) => {
+                onStarted();
+            }),
+        );
+
+        /**
+         * Handle called at each animation frame, starting the position getting async task
+         *
+         * @type {{
+         *   call: function(): void,
+         *   cancel: function(): void,
+         * }}
+         */
+        const processAnimationFrameHandle = PromiseUtils.transformAsync(processWrapperBounds, this.getWrapperBounds);
+
+        /**
+         * Handle to the animation loop that drives the whole syncing process
+         *
+         * @type {Handle}
+         */
+        const animationHandle = AnimationUtils.requestAnimationFrames(processAnimationFrameHandle.call);
+
+        return HandleUtils.mergeHandles(
+            processAnimationFrameHandle,
+            animationHandle,
+        );
+    }
+
+    /**
      * Display the tooltip in an animation.
      */
     showTooltip() {
@@ -87,20 +143,8 @@ class Tooltip extends PureComponent {
         this.animation.stopAnimation();
         this.shouldStartShowAnimation = true;
 
-        // We have to dynamically calculate the position here as tooltip could have been rendered on some elments
-        // that has changed its position
-        this.getWrapperPositionPromise = makeCancellablePromise(this.getWrapperPosition());
-        this.getWrapperPositionPromise.promise
-            .then(({
-                x, y, width, height,
-            }) => {
-                this.setState({
-                    wrapperWidth: width,
-                    wrapperHeight: height,
-                    xOffset: x,
-                    yOffset: y,
-                });
-
+        this.syncingPositionHandle = this.startSyncingPosition({
+            onStarted: () => {
                 // We may need this check due to the reason that the animation start will fire async
                 // and hideTooltip could fire before it thus keeping the Tooltip visible
                 if (this.shouldStartShowAnimation) {
@@ -118,7 +162,8 @@ class Tooltip extends PureComponent {
                     }
                     TooltipSense.activate();
                 }
-            });
+            },
+        });
     }
 
     /**
@@ -139,6 +184,11 @@ class Tooltip extends PureComponent {
             }).start();
         }
         TooltipSense.deactivate();
+
+        if (this.syncingPositionHandle) {
+            this.syncingPositionHandle.cancel();
+            this.syncingPositionHandle = null;
+        }
     }
 
     render() {
