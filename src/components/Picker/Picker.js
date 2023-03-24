@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import React, {PureComponent} from 'react';
-import {View} from 'react-native';
+import {Platform, View} from 'react-native';
 import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import Icon from '../Icon';
@@ -111,10 +111,13 @@ class Picker extends PureComponent {
         };
 
         this.root = null;
+        this.picker = null;
 
         this.onInputChange = this.onInputChange.bind(this);
         this.enableHighlight = this.enableHighlight.bind(this);
         this.disableHighlight = this.disableHighlight.bind(this);
+        this.blur = this.blur.bind(this);
+        this.focus = this.focus.bind(this);
         this.measureLayout = this.measureLayout.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
@@ -173,6 +176,27 @@ class Picker extends PureComponent {
     }
 
     /**
+     * This method is used by Form
+     */
+    // eslint-disable-next-line rulesdir/prefer-early-return
+    blur() {
+        if (Platform.OS === 'web') {
+            this.picker.blur();
+        }
+    }
+
+    /**
+     * This method is used by Form
+     */
+    // eslint-disable-next-line rulesdir/prefer-early-return
+    focus() {
+        // On the Web, calling `focus` improves accessibility. It doesn't open the picker.
+        if (Platform.OS === 'web') {
+            this.picker.focus();
+        }
+    }
+
+    /**
      * This method is used by Form when scrolling to the input
      */
     measureLayout(...args) {
@@ -217,6 +241,7 @@ class Picker extends PureComponent {
                         onClose={this.disableHighlight}
                         textInputProps={{allowFontScaling: false}}
                         pickerProps={{
+                            ref: el => this.picker = el,
                             onFocus: this.enableHighlight,
                             onBlur: () => {
                                 this.disableHighlight();
