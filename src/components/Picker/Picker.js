@@ -110,9 +110,12 @@ class Picker extends PureComponent {
             isHighlighted: false,
         };
 
+        this.root = null;
+
         this.onInputChange = this.onInputChange.bind(this);
         this.enableHighlight = this.enableHighlight.bind(this);
         this.disableHighlight = this.disableHighlight.bind(this);
+        this.measureLayout = this.measureLayout.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -169,12 +172,20 @@ class Picker extends PureComponent {
         });
     }
 
+    /**
+     * This method is used by Form when scrolling to the input
+     */
+    measureLayout(...args) {
+        return this.root.measureLayout(...args);
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
         return (
             <>
                 <View
+                    ref={el => this.root = el}
                     style={[
                         styles.pickerContainer,
                         this.props.isDisabled && styles.inputDisabled,
@@ -219,12 +230,6 @@ class Picker extends PureComponent {
                                 },
                             ),
                         }}
-                        ref={(el) => {
-                            if (!_.isFunction(this.props.innerRef)) {
-                                return;
-                            }
-                            this.props.innerRef(el);
-                        }}
                         scrollViewRef={this.context && this.context.scrollViewRef}
                         scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
                     />
@@ -240,4 +245,4 @@ Picker.defaultProps = defaultProps;
 Picker.contextType = ScrollContext;
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-export default React.forwardRef((props, ref) => <Picker {...props} innerRef={ref} key={props.inputID} />);
+export default React.forwardRef((props, ref) => <Picker {...props} ref={ref} key={props.inputID} />);
