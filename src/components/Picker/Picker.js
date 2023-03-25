@@ -12,7 +12,7 @@ import themeColors from '../../styles/themes/default';
 import {ScrollContext} from '../ScrollViewWithContext';
 
 const propTypes = {
-    /** Picker label */
+    /** Picker label TEST */
     label: PropTypes.string,
 
     /** Should the picker appear disabled? */
