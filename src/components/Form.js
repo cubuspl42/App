@@ -1,6 +1,6 @@
 import lodashGet from 'lodash/get';
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {Keyboard, ScrollView, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import {withOnyx} from 'react-native-onyx';
@@ -337,6 +337,9 @@ class Form extends React.Component {
 
                         const formRef = this.formRef.current;
                         const formContentRef = this.formContentRef.current;
+
+                        // Start with dismissing the keyboard, so when we focus a non-text input, the keyboard is hidden
+                        Keyboard.dismiss();
 
                         // We subtract 10 to scroll slightly above the input
                         if (focusInput.measureLayout && typeof focusInput.measureLayout === 'function') {
