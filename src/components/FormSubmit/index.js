@@ -12,7 +12,7 @@ class FormSubmit extends React.Component {
     }
 
     /**
-     * Calls the submit callback when ENTER is pressed on a form element. TEST
+     * Calls the submit callback when ENTER is pressed on a form element. TESTT
      * @param {Object} event
      */
 
