@@ -135,6 +135,10 @@ class CompanyStep extends React.Component {
             errors.hasNoConnectionToCannabis = this.props.translate('bankAccount.error.restrictedBusiness');
         }
 
+        if (!values.someInput) {
+            errors.someInput = 'Some error';
+        }
+
         return errors;
     }
 
@@ -188,6 +192,18 @@ class CompanyStep extends React.Component {
                         defaultValue={this.props.getDefaultStateForField('companyName')}
                         shouldSaveDraft
                         shouldUseDefaultValue={shouldDisableCompanyName}
+                    />
+
+                    <CheckboxWithLabel
+                        inputID="someInput"
+                        defaultValue={false}
+                        LabelComponent={() => (
+                            <Text>
+                                Some checkbox
+                            </Text>
+                        )}
+                        style={[styles.mt4]}
+                        shouldSaveDraft
                     />
                     <AddressForm
                         translate={this.props.translate}

@@ -92,6 +92,13 @@ class Checkbox extends React.Component {
         this.props.onPress();
     }
 
+    focus() {
+    }
+
+    measureLayout(...args) {
+        return this.root.measureLayout(...args);
+    }
+
     render() {
         return (
             <Pressable
@@ -100,7 +107,7 @@ class Checkbox extends React.Component {
                 onMouseDown={this.props.onMouseDown}
                 onFocus={this.onFocus}
                 onBlur={this.onBlur}
-                ref={this.props.forwardedRef}
+                ref={el => this.root = el}
                 onPressOut={this.onBlur}
                 style={this.props.style}
                 onKeyDown={this.handleSpaceKey}

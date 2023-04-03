@@ -227,8 +227,14 @@ class Picker extends PureComponent {
                         Icon={() => this.props.icon(this.props.size)}
                         disabled={this.props.isDisabled}
                         fixAndroidTouchableBug
-                        onOpen={this.enableHighlight}
-                        onClose={this.disableHighlight}
+                        onOpen={() => {
+                            this.enableHighlight();
+                            this.context.setPickerOpen(true);
+                        }}
+                        onClose={() => {
+                            this.disableHighlight();
+                            this.context.setPickerOpen(false);
+                        }}
                         textInputProps={{allowFontScaling: false}}
                         pickerProps={{
                             onFocus: this.enableHighlight,

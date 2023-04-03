@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView} from 'react-native';
+import {ScrollView, View} from 'react-native';
 
 const MIN_SMOOTH_SCROLL_EVENT_THROTTLE = 16;
 
@@ -7,6 +7,22 @@ const ScrollContext = React.createContext();
 
 // eslint-disable-next-line react/forbid-foreign-prop-types
 const propTypes = ScrollView.propTypes;
+
+const styles = {
+    wrapper: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+    },
+    main: {
+        flex: 1,
+    },
+    space: {
+        height: 260,
+        // height: 0,
+    },
+};
 
 /*
 * <ScrollViewWithContext /> is a wrapper around <ScrollView /> that provides a ref to the <ScrollView />.
@@ -21,10 +37,12 @@ class ScrollViewWithContext extends React.Component {
 
         this.state = {
             contentOffsetY: 0,
+            isPickerOpen: false,
         };
         this.scrollViewRef = this.props.innerRef || React.createRef(null);
 
         this.setContextScrollPosition = this.setContextScrollPosition.bind(this);
+        this.setPickerOpen = this.setPickerOpen.bind(this);
     }
 
     setContextScrollPosition(event) {
@@ -32,6 +50,12 @@ class ScrollViewWithContext extends React.Component {
             this.props.onScroll(event);
         }
         this.setState({contentOffsetY: event.nativeEvent.contentOffset.y});
+    }
+
+    setPickerOpen(isPickerOpen) {
+        this.setState({
+            isPickerOpen,
+        });
     }
 
     render() {
@@ -47,9 +71,15 @@ class ScrollViewWithContext extends React.Component {
                     value={{
                         scrollViewRef: this.scrollViewRef,
                         contentOffsetY: this.state.contentOffsetY,
+                        setPickerOpen: this.setPickerOpen,
                     }}
                 >
-                    {this.props.children}
+                    <View style={styles.wrapper}>
+                        <View style={styles.main}>
+                            {this.props.children}
+                        </View>
+                        {this.state.isPickerOpen && <View style={styles.space} />}
+                    </View>
                 </ScrollContext.Provider>
             </ScrollView>
         );
