@@ -49,7 +49,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [[RCTI18nUtil sharedInstance] allowRTL:NO];
   [[RCTI18nUtil sharedInstance] forceRTL:NO];
 
-  RCTAppSetupPrepareApp(application);
+  RCTAppSetupPrepareApp(application, true);
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self
                                             launchOptions:launchOptions];
@@ -68,7 +68,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   NSDictionary *initProps = [self prepareInitialProps];
   UIView *rootView =
-      RCTAppSetupDefaultRootView(bridge, @"NewExpensify", initProps);
+      RCTAppSetupDefaultRootView(bridge, @"NewExpensify", initProps, true);
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f
                                                     green:1.0f
