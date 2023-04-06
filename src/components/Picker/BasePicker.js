@@ -10,6 +10,7 @@ import Text from '../Text';
 import styles from '../../styles/styles';
 import themeColors from '../../styles/themes/default';
 import {ScrollContext} from '../ScrollViewWithContext';
+import withPickerState, {pickerStatePropTypes} from '../withPickerState';
 
 const propTypes = {
     /** BasePicker label */
@@ -76,6 +77,8 @@ const propTypes = {
 
     /** Hint text that appears below the picker */
     hintText: PropTypes.string,
+
+    ...pickerStatePropTypes,
 };
 
 const defaultProps = {
@@ -118,6 +121,7 @@ class BasePicker extends PureComponent {
         this.disableHighlight = this.disableHighlight.bind(this);
         this.focus = this.focus.bind(this);
         this.measureLayout = this.measureLayout.bind(this);
+        this.scrollToInput = this.scrollToInput.bind(this);
 
         // Windows will reuse the text color of the select for each one of the options
         // so we might need to color accordingly so it doesn't blend with the background.
@@ -209,6 +213,26 @@ class BasePicker extends PureComponent {
         this.root.measureLayout(relativeToNativeComponentRef, onSuccess, onFail);
     }
 
+    scrollToInput() {
+        const scrollToBottomAligned = (scrollView, args) => {
+            const {y, animated} = args;
+
+            console.log({scrollView});
+
+            scrollView.measureInWindow((_1, _2, _3, height) => {
+                scrollView.scrollTo({y: y - height, animated: animated});
+            });
+        };
+
+        const scrollView = this.context && this.context.scrollViewRef.current;
+
+        if (scrollView) {
+            this.measureLayout(scrollView, (_1, inputY, _3, inputHeight) => {
+                scrollToBottomAligned(scrollView, {y: inputY + inputHeight + 10});
+            });
+        }
+    }
+
     render() {
         const hasError = !_.isEmpty(this.props.errorText);
 
@@ -264,8 +288,15 @@ class BasePicker extends PureComponent {
                         Icon={() => this.props.icon(this.props.size)}
                         disabled={this.props.isDisabled}
                         fixAndroidTouchableBug
-                        onOpen={this.enableHighlight}
-                        onClose={this.disableHighlight}
+                        onOpen={() => {
+                            this.enableHighlight();
+                            this.props.notifyPickerShown();
+                            this.scrollToInput();
+                        }}
+                        onClose={() => {
+                            this.disableHighlight();
+                            this.props.notifyPickerHidden();
+                        }}
                         textInputProps={{
                             allowFontScaling: false,
                         }}
@@ -284,8 +315,6 @@ class BasePicker extends PureComponent {
                                 },
                             ),
                         }}
-                        scrollViewRef={this.context && this.context.scrollViewRef}
-                        scrollViewContentOffsetY={this.context && this.context.contentOffsetY}
                     />
                 </View>
                 <FormHelpMessage message={this.props.errorText} />
@@ -304,7 +333,7 @@ BasePicker.propTypes = propTypes;
 BasePicker.defaultProps = defaultProps;
 BasePicker.contextType = ScrollContext;
 
-export default React.forwardRef((props, ref) => (
+export default withPickerState(React.forwardRef((props, ref) => (
     <BasePicker
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
@@ -313,4 +342,4 @@ export default React.forwardRef((props, ref) => (
         ref={ref}
         key={props.inputID}
     />
-));
+)));

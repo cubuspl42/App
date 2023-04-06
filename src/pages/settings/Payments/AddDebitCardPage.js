@@ -201,6 +201,12 @@ class DebitCardPage extends Component {
                         )}
                         style={[styles.mt4]}
                     />
+
+                    <View style={styles.mt4}>
+                        <StatePicker
+                            onInputChange={() => {}}
+                        />
+                    </View>
                 </Form>
             </ScreenWrapper>
         );
