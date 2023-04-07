@@ -369,7 +369,6 @@ class Form extends React.Component {
                         style={[styles.w100, styles.flex1]}
                         contentContainerStyle={styles.flexGrow1}
                         keyboardShouldPersistTaps="handled"
-                        scrollToOverflowEnabled={this.props.scrollToOverflowEnabled}
                         ref={this.formRef}
                     >
                         {scrollViewContent(safeAreaPaddingBottomStyle)}
@@ -379,7 +378,6 @@ class Form extends React.Component {
                         style={[styles.w100, styles.flex1]}
                         contentContainerStyle={styles.flexGrow1}
                         keyboardShouldPersistTaps="handled"
-                        scrollToOverflowEnabled={this.props.scrollToOverflowEnabled}
                         ref={this.formRef}
                     >
                         {scrollViewContent(safeAreaPaddingBottomStyle)}

@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import React, {PureComponent} from 'react';
-import {View} from 'react-native';
+import {Dimensions, View} from 'react-native';
 import PropTypes from 'prop-types';
 import RNPickerSelect from 'react-native-picker-select';
 import Icon from '../Icon';
@@ -217,10 +217,8 @@ class BasePicker extends PureComponent {
         const scrollToBottomAligned = (scrollView, args) => {
             const {y, animated} = args;
 
-            console.log({scrollView});
-
-            scrollView.measureInWindow((_1, _2, _3, height) => {
-                scrollView.scrollTo({y: y - height, animated: animated});
+            scrollView.measureInWindow((_x, _y, _width, height) => {
+                scrollView.scrollTo({y: y - height, animated});
             });
         };
 

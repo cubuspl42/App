@@ -133,6 +133,23 @@ class DebitCardPage extends Component {
                         inputID="nameOnCard"
                         label={this.props.translate('addDebitCardPage.nameOnCard')}
                     />
+                    <View style={styles.mt4}>
+                        <StatePicker
+                            onInputChange={() => {}}
+                        />
+                    </View>
+                    <TextInput
+                        label={this.props.translate('addDebitCardPage.nameOnCard')}
+                    />
+                    <TextInput
+                        label={this.props.translate('addDebitCardPage.nameOnCard')}
+                    />
+                    <TextInput
+                        label={this.props.translate('addDebitCardPage.nameOnCard')}
+                    />
+                    <TextInput
+                        label={this.props.translate('addDebitCardPage.nameOnCard')}
+                    />
                     <TextInput
                         inputID="cardNumber"
                         label={this.props.translate('addDebitCardPage.debitCardNumber')}

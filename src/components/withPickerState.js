@@ -1,11 +1,10 @@
 /* eslint-disable react/no-unused-state */
 import React, {createContext, forwardRef} from 'react';
 import PropTypes from 'prop-types';
-import {View} from 'react-native';
 import getComponentDisplayName from '../libs/getComponentDisplayName';
-import themeColors from '../styles/themes/default';
 
 const PickerStateContext = createContext(null);
+
 const pickerStatePropTypes = {
     /** Whether the picker is open */
     isPickerShown: PropTypes.bool.isRequired,
@@ -18,23 +17,6 @@ const pickerStatePropTypes = {
 const pickerStateProviderPropTypes = {
     /* Actual content wrapped by this component */
     children: PropTypes.node.isRequired,
-};
-
-const styles = {
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-    },
-    top: {
-        flex: 1,
-        backgroundColor: 'red',
-    },
-    bottom: {
-        height: 260,
-        backgroundColor: themeColors.appBG,
-    },
 };
 
 class PickerStateProvider extends React.Component {
@@ -70,12 +52,7 @@ class PickerStateProvider extends React.Component {
                     notifyPickerHidden: this.notifyPickerHidden,
                 }}
             >
-                <View style={styles.container}>
-                    <View style={styles.top}>
-                        {this.props.children}
-                    </View>
-                    {this.state.isPickerShown && <View style={styles.bottom} />}
-                </View>
+                {this.props.children}
             </PickerStateContext.Provider>
         );
     }

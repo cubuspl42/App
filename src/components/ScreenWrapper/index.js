@@ -18,6 +18,7 @@ import {withNetwork} from '../OnyxProvider';
 import {propTypes, defaultProps} from './propTypes';
 import SafeAreaConsumer from '../SafeAreaConsumer';
 import withKeyboardState from '../withKeyboardState';
+import PickerAvoidingView from '../PickerAvoidingView';
 
 class ScreenWrapper extends React.Component {
     constructor(props) {
@@ -110,19 +111,21 @@ class ScreenWrapper extends React.Component {
                             ]}
                         >
                             <KeyboardAvoidingView style={[styles.w100, styles.h100, {maxHeight: this.props.windowHeight}]} behavior={this.props.keyboardAvoidingViewBehavior}>
-                                <HeaderGap />
-                                {// If props.children is a function, call it to provide the insets to the children.
-                                    _.isFunction(this.props.children)
-                                        ? this.props.children({
-                                            insets,
-                                            safeAreaPaddingBottomStyle,
-                                            didScreenTransitionEnd: this.state.didScreenTransitionEnd,
-                                        })
-                                        : this.props.children
-                                }
-                                {this.props.isSmallScreenWidth && (
-                                    <OfflineIndicator />
-                                )}
+                                <PickerAvoidingView>
+                                    <HeaderGap />
+                                    {// If props.children is a function, call it to provide the insets to the children.
+                                        _.isFunction(this.props.children)
+                                            ? this.props.children({
+                                                insets,
+                                                safeAreaPaddingBottomStyle,
+                                                didScreenTransitionEnd: this.state.didScreenTransitionEnd,
+                                            })
+                                            : this.props.children
+                                    }
+                                    {this.props.isSmallScreenWidth && (
+                                        <OfflineIndicator />
+                                    )}
+                                </PickerAvoidingView>
                             </KeyboardAvoidingView>
                         </View>
                     );
