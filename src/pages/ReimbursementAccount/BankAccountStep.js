@@ -92,7 +92,7 @@ const BankAccountStep = (props) => {
     }
 
     return (
-        <ScreenWrapper includeSafeAreaPaddingBottom={false}>
+        <ScreenWrapper includeSafeAreaPaddingBottom={false} applyKeyboardAvoidingMaxHeight>
             <View style={[styles.flex1, styles.justifyContentBetween]}>
                 <HeaderWithCloseButton
                     title={props.translate('workspace.common.bankAccount')}
