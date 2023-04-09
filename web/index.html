@@ -54,10 +54,17 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
+        [data-autoscroll="none"] input:focus-visible,
+        [data-autoscroll="none"] input:focus[data-focusvisible-polyfill],
+        [data-autoscroll="none"] select:focus-visible,
+        [data-autoscroll="none"] select:focus[data-focusvisible-polyfill],
+        [data-autoscroll="none"] textarea:focus-visible,
+        [data-autoscroll="none"] textarea:focus[data-focusvisible-polyfill]{
+            animation: blink_input_opacity_to_prevent_scrolling_when_focus 0.01s;
+        }
         input:focus-visible, input:focus[data-focusvisible-polyfill],
         select:focus-visible, select:focus[data-focusvisible-polyfill]  {
             box-shadow: none;
-            animation: blink_input_opacity_to_prevent_scrolling_when_focus 0.01s;
         }
         ::-ms-reveal {
             display: none;
