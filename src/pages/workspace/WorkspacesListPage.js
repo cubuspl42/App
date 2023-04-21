@@ -202,7 +202,10 @@ class WorkspacesListPage extends Component {
                     <Button
                         success
                         text={this.props.translate('workspace.new.newWorkspace')}
-                        onPress={() => Policy.createWorkspace()}
+                        onPress={() => {
+                            console.log('Creating workspace, with basic runAfterInteraction protection');
+                            Policy.createWorkspace();
+                        }}
                     />
                 </FixedFooter>
             </ScreenWrapper>

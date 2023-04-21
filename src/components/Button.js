@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Pressable, ActivityIndicator, View} from 'react-native';
+import {Pressable, ActivityIndicator, View, InteractionManager} from 'react-native';
 import PropTypes from 'prop-types';
 import styles from '../styles/styles';
 import themeColors from '../styles/themes/default';
@@ -236,6 +236,8 @@ class Button extends Component {
         return (
             <Pressable
                 onPress={(e) => {
+                    console.log('Pressable onPress');
+
                     if (e && e.type === 'click') {
                         e.currentTarget.blur();
                     }
@@ -243,7 +245,10 @@ class Button extends Component {
                     if (this.props.shouldEnableHapticFeedback) {
                         HapticFeedback.press();
                     }
-                    this.props.onPress(e);
+                    InteractionManager.runAfterInteractions(() => {
+                        console.log('Pressable runAfterInteractions');
+                        this.props.onPress(e);
+                    });
                 }}
                 onLongPress={(e) => {
                     if (this.props.shouldEnableHapticFeedback) {
