@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Pressable, ActivityIndicator, View} from 'react-native';
+import {Pressable, ActivityIndicator, View, InteractionManager} from 'react-native';
 import PropTypes from 'prop-types';
 import styles from '../styles/styles';
 import themeColors from '../styles/themes/default';
@@ -144,6 +144,9 @@ const defaultProps = {
 class Button extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            isDisabled: props.isDisabled,
+        };
 
         this.renderContent = this.renderContent.bind(this);
     }
@@ -163,6 +166,14 @@ class Button extends Component {
             e.preventDefault();
             this.props.onPress();
         }, shortcutConfig.descriptionKey, shortcutConfig.modifiers, true, false, this.props.enterKeyEventListenerPriority, false);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.isDisabled === prevProps.isDisabled) {
+            return;
+        }
+
+        this.setState({isDisabled: this.props.isDisabled});
     }
 
     componentWillUnmount() {
@@ -243,7 +254,11 @@ class Button extends Component {
                     if (this.props.shouldEnableHapticFeedback) {
                         HapticFeedback.press();
                     }
-                    this.props.onPress(e);
+
+                    const onPress = this.props.onPress(e);
+                    InteractionManager.runAfterInteractions(() => {
+                        this.setState({isDisabled: this.props.isDisabled});
+                    });
                 }}
                 onLongPress={(e) => {
                     if (this.props.shouldEnableHapticFeedback) {
