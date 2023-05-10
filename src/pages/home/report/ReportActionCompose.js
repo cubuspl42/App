@@ -161,6 +161,7 @@ class ReportActionCompose extends React.Component {
         this.calculateEmojiSuggestion = _.debounce(this.calculateEmojiSuggestion, 10, false);
         this.updateComment = this.updateComment.bind(this);
         this.debouncedSaveReportComment = _.debounce(this.debouncedSaveReportComment.bind(this), 1000, false);
+        this.debouncedSetReportWithDraft = _.debounce(this.debouncedSetReportWithDraft.bind(this), 100, false);
         this.debouncedBroadcastUserIsTyping = _.debounce(this.debouncedBroadcastUserIsTyping.bind(this), 100, true);
         this.triggerHotkeyActions = this.triggerHotkeyActions.bind(this);
         this.submitForm = this.submitForm.bind(this);
@@ -580,6 +581,10 @@ class ReportActionCompose extends React.Component {
         Report.saveReportComment(this.props.reportID, comment || '');
     }
 
+    debouncedSetReportWithDraft(hasDraft) {
+        Report.setReportWithDraft(this.props.reportID, hasDraft);
+    }
+
     /**
      * Broadcast that the user is typing. We debounce this method in the constructor to limit how often we publish
      * client events.
@@ -618,7 +623,7 @@ class ReportActionCompose extends React.Component {
 
         // The draft has been deleted.
         if (newComment.length === 0) {
-            Report.setReportWithDraft(this.props.reportID, false);
+            this.debouncedSetReportWithDraft(false);
         }
 
         this.comment = newComment;
@@ -695,7 +700,7 @@ class ReportActionCompose extends React.Component {
             return '';
         }
 
-        this.updateComment('');
+        this.updateComment('', true);
         this.setTextInputShouldClear(true);
         if (this.props.isComposerFullSize) {
             Report.setIsComposerFullSize(this.props.reportID, false);

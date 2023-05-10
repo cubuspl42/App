@@ -125,7 +125,8 @@ class ReportScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        this.onSubmitComment = this.onSubmitComment.bind(this);
+        this.debouncedAddComment = _.debounce(this.debouncedAddComment.bind(this), 10, false);
+
         this.chatWithAccountManager = this.chatWithAccountManager.bind(this);
         this.dismissBanner = this.dismissBanner.bind(this);
 
@@ -176,7 +177,7 @@ class ReportScreen extends React.Component {
     /**
      * @param {String} text
      */
-    onSubmitComment(text) {
+    debouncedAddComment(text) {
         Report.addComment(getReportID(this.props.route), text);
     }
 
@@ -352,7 +353,7 @@ class ReportScreen extends React.Component {
                                         reportActions={this.props.reportActions}
                                         report={this.props.report}
                                         isComposerFullSize={this.props.isComposerFullSize}
-                                        onSubmitComment={this.onSubmitComment}
+                                        onSubmitComment={this.debouncedAddComment}
                                     />
                                 </>
                             )}
