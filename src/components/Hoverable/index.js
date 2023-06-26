@@ -77,21 +77,24 @@ class Hoverable extends Component {
             child = child(this.state.isHovered);
         }
 
+        const {ref} = child;
+
+        const wrappedRef = ref ? (el) => {
+            this.wrapperView = el;
+
+            // Call the original ref, if any
+            if (_.isFunction(ref)) {
+                ref(el);
+                return;
+            }
+
+            if (_.isObject(ref)) {
+                ref.current = el;
+            }
+        } : undefined;
+
         return React.cloneElement(React.Children.only(child), {
-            ref: (el) => {
-                this.wrapperView = el;
-
-                // Call the original ref, if any
-                const {ref} = child;
-                if (_.isFunction(ref)) {
-                    ref(el);
-                    return;
-                }
-
-                if (_.isObject(ref)) {
-                    ref.current = el;
-                }
-            },
+            ref: wrappedRef,
             onMouseEnter: (el) => {
                 this.setIsHovered(true);
 
@@ -107,6 +110,8 @@ class Hoverable extends Component {
                 }
             },
             onBlur: (el) => {
+                if (!this.wrapperView) return;
+
                 // Check if the blur event occurred due to clicking outside the element
                 // and the wrapperView contains the element that caused the blur and reset isHovered
                 if (!this.wrapperView.contains(el.target) && !this.wrapperView.contains(el.relatedTarget)) {
