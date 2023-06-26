@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import React from 'react';
+import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {Linking} from 'react-native';
 import Text from './Text';
@@ -30,7 +30,7 @@ const defaultProps = {
     onMouseDown: (event) => event.preventDefault(),
 };
 
-function TextLink(props) {
+const TextLink = forwardRef((props, ref) => {
     const rest = _.omit(props, _.keys(propTypes));
     const additionalStyles = _.isArray(props.style) ? props.style : [props.style];
 
@@ -59,6 +59,7 @@ function TextLink(props) {
 
     return (
         <Text
+            ref={ref}
             style={[styles.link, ...additionalStyles]}
             accessibilityRole="link"
             href={props.href}
@@ -71,9 +72,10 @@ function TextLink(props) {
             {props.children}
         </Text>
     );
-}
+});
 
 TextLink.defaultProps = defaultProps;
 TextLink.propTypes = propTypes;
 TextLink.displayName = 'TextLink';
+
 export default TextLink;
