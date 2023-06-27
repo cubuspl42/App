@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useImperativeHandle, useRef} from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
 import styles from '../styles/styles';
@@ -52,6 +52,32 @@ const defaultProps = {
 };
 
 function Checkbox(props) {
+    const pressableRef = useRef();
+
+    useImperativeHandle(
+        props.forwardedRef,
+        () => ({
+            /**
+             * Like measure(), but measures the view relative to an ancestor
+             *
+             * This method is used by Form when scrolling to the input
+             *
+             * @param {Object} relativeToNativeComponentRef - reference to an ancestor
+             * @param {function(x: number, y: number, width: number, height: number): void} onSuccess - callback called on success
+             * @param {function(): void} onFail - callback called on failure
+             */
+            measureLayout(relativeToNativeComponentRef, onSuccess, onFail) {
+                console.log({pressableRef: pressableRef.current});
+
+                if (!pressableRef.current) {
+                    return;
+                }
+
+                pressableRef.current.measureLayout(relativeToNativeComponentRef, onSuccess, onFail);
+            }
+        }),
+    );
+
     const handleSpaceKey = (event) => {
         if (event.code !== 'Space') {
             return;
@@ -72,10 +98,10 @@ function Checkbox(props) {
 
     return (
         <PressableWithFeedback
+            ref={pressableRef}
             disabled={props.disabled}
             onPress={firePressHandlerOnClick}
             onMouseDown={props.onMouseDown}
-            ref={props.forwardedRef}
             style={[props.style, styles.checkboxPressable]}
             onKeyDown={handleSpaceKey}
             accessibilityRole="checkbox"
