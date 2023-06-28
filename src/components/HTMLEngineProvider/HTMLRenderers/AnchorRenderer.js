@@ -95,7 +95,7 @@ function AnchorRenderer(props) {
             // eslint-disable-next-line react/jsx-props-no-multi-spaces
             target={htmlAttribs.target || '_blank'}
             rel={htmlAttribs.rel || 'noopener noreferrer'}
-            style={{...props.style, ...parentStyle, ...styles.textUnderlinePositionUnder, ...styles.textDecorationSkipInkNone}}
+            style={{...props.style, ...parentStyle, ...styles.textUnderlinePositionUnder, ...styles.textDecorationSkipInkNone, ...styles.userDragNone}}
             key={props.key}
             displayName={displayName}
             // Only pass the press handler for internal links. For public links or whitelisted internal links fallback to default link handling

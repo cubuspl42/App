@@ -23,6 +23,7 @@ import overflowXHidden from './overflowXHidden';
 import CONST from '../CONST';
 import cursor from './utilities/cursor';
 import userSelect from './utilities/userSelect';
+import userDrag from './utilities/userDrag';
 import textUnderline from './utilities/textUnderline';
 
 function getTransparentColor(color, transparency = '') {
@@ -167,6 +168,7 @@ const styles = {
     ...writingDirection,
     ...cursor,
     ...userSelect,
+    ...userDrag,
     ...themeColors,
     ...textUnderline,
 
