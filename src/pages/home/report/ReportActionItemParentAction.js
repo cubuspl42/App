@@ -62,11 +62,12 @@ function ReportActionItemParentAction(props) {
                 <View style={[styles.p5, StyleUtils.getReportWelcomeTopMarginStyle(props.isSmallScreenWidth)]} />
                 {parentReportAction && (
                     <ReportActionItem
-                        report={props.report}
+                        report={props.parentReport}
                         action={parentReportAction}
                         displayAsGroup={false}
                         isMostRecentIOUReportAction={false}
                         shouldDisplayNewMarker={props.shouldDisplayNewMarker}
+                        shouldDisplayThreadReplies={false}
                         index={0}
                     />
                 )}
@@ -86,6 +87,9 @@ export default compose(
     withOnyx({
         report: {
             key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT}${reportID}`,
+        },
+        parentReport: {
+            key: ({parentReportID}) => `${ONYXKEYS.COLLECTION.REPORT}${parentReportID}`,
         },
         parentReportActions: {
             key: ({parentReportID}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${parentReportID}`,

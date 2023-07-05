@@ -78,6 +78,9 @@ const propTypes = {
     /** Determines if the avatar is displayed as a subscript (positioned lower than normal) */
     shouldShowSubscriptAvatar: PropTypes.bool,
 
+    /** Should we display a preview of thread replies, if any */
+    shouldDisplayThreadReplies: PropTypes.bool,
+
     /** Position index of the report action in the overall report FlatList view */
     index: PropTypes.number.isRequired,
 
@@ -100,6 +103,7 @@ const defaultProps = {
     preferredSkinTone: CONST.EMOJI_DEFAULT_SKIN_TONE,
     personalDetailsList: {},
     shouldShowSubscriptAvatar: false,
+    shouldDisplayThreadReplies: true,
     hasOutstandingIOU: false,
 };
 
@@ -331,7 +335,11 @@ function ReportActionItem(props) {
         const numberOfThreadReplies = _.get(props, ['action', 'childVisibleActionCount'], 0);
         const hasReplies = numberOfThreadReplies > 0;
 
-        const shouldDisplayThreadReplies = hasReplies && props.action.childCommenterCount && !ReportUtils.isThreadFirstChat(props.action, props.report.reportID);
+        const shouldDisplayThreadReplies = props.shouldDisplayThreadReplies &&
+            hasReplies &&
+            props.action.childCommenterCount &&
+            !ReportUtils.isThreadFirstChat(props.action, props.report.reportID);
+
         const oldestFourAccountIDs = lodashGet(props.action, 'childOldestFourAccountIDs', '').split(',');
         const draftMessageRightAlign = props.draftMessage ? styles.chatItemReactionsDraftRight : {};
 
