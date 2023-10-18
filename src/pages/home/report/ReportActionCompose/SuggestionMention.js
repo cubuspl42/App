@@ -235,9 +235,10 @@ function SuggestionMention({
     useEffect(() => {
         calculateMentionSuggestion(selection.end);
 
-        // We want this hook to run only on selection change.
+        // We want this hook to run only on selection change, so we disable the exhaustive-deps lint
+        // We add an otherwise extraneous `value` dep to work-around an issue on iOS: https://github.com/Expensify/App/issues/28657
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selection]);
+    }, [selection, value]);
 
     const updateShouldShowSuggestionMenuToFalse = useCallback(() => {
         setSuggestionValues((prevState) => {
