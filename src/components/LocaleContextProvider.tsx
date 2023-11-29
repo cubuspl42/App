@@ -11,6 +11,7 @@ import CONST from '@src/CONST';
 import {TranslationPaths} from '@src/languages/types';
 import ONYXKEYS from '@src/ONYXKEYS';
 import withCurrentUserPersonalDetails, {WithCurrentUserPersonalDetailsProps} from './withCurrentUserPersonalDetails';
+import getSerialComma from "@libs/getSerialComma";
 
 type Locale = ValueOf<typeof CONST.LOCALES>;
 
@@ -51,6 +52,9 @@ type LocaleContextProps = {
     /** Gets the standard digit corresponding to a locale digit */
     fromLocaleDigit: (digit: string) => string;
 
+    /** A character used before the conjunction in a list of three or more items, or undefined if such a character is not used in the locale */
+    serialComma: string | undefined;
+
     /** The user's preferred locale e.g. 'en', 'es-ES' */
     preferredLocale: Locale;
 };
@@ -64,6 +68,7 @@ const LocaleContext = createContext<LocaleContextProps>({
     formatPhoneNumber: () => '',
     toLocaleDigit: () => '',
     fromLocaleDigit: () => '',
+    serialComma: undefined,
     preferredLocale: CONST.LOCALES.DEFAULT,
 });
 
@@ -98,6 +103,8 @@ function LocaleContextProvider({preferredLocale, currentUserPersonalDetails = {}
 
     const fromLocaleDigit = useMemo<LocaleContextProps['fromLocaleDigit']>(() => (localeDigit) => LocaleDigitUtils.fromLocaleDigit(locale, localeDigit), [locale]);
 
+    const serialComma = useMemo<LocaleContextProps['serialComma']>(() => getSerialComma(locale), [locale]);
+
     const contextValue = useMemo<LocaleContextProps>(
         () => ({
             translate,
@@ -108,9 +115,10 @@ function LocaleContextProvider({preferredLocale, currentUserPersonalDetails = {}
             formatPhoneNumber,
             toLocaleDigit,
             fromLocaleDigit,
+            serialComma,
             preferredLocale: locale,
         }),
-        [translate, numberFormat, datetimeToRelative, datetimeToCalendarTime, updateLocale, formatPhoneNumber, toLocaleDigit, fromLocaleDigit, locale],
+        [translate, numberFormat, datetimeToRelative, datetimeToCalendarTime, updateLocale, formatPhoneNumber, toLocaleDigit, fromLocaleDigit, serialComma, locale],
     );
 
     return <LocaleContext.Provider value={contextValue}>{children}</LocaleContext.Provider>;
