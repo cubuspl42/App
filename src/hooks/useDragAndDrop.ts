@@ -53,9 +53,15 @@ export default function useDragAndDrop({
         setIsDraggingOver(false);
     }, [isFocused, isDisabled]);
 
-    const setDropEffect = useCallback(
+    const handleDragEvent = useCallback(
         (event: DragEvent) => {
-            const effect = shouldAllowDrop && shouldAcceptDrop(event) ? COPY_DROP_EFFECT : NONE_DROP_EFFECT;
+            const shouldAcceptThisDrop = shouldAllowDrop && shouldAcceptDrop(event);
+
+            if (shouldAcceptThisDrop) {
+                closePopover();
+            }
+
+            const effect = shouldAcceptThisDrop ? COPY_DROP_EFFECT : NONE_DROP_EFFECT;
 
             if (event.dataTransfer) {
                 // eslint-disable-next-line no-param-reassign
@@ -81,14 +87,13 @@ export default function useDragAndDrop({
 
             switch (event.type) {
                 case DRAG_OVER_EVENT:
-                    setDropEffect(event);
+                    handleDragEvent(event);
                     break;
                 case DRAG_ENTER_EVENT:
                     dragCounter.current++;
-                    setDropEffect(event);
-                    if (shouldClosePopover) {
-                        closePopover();
-                    }
+
+                    handleDragEvent(event);
+
                     if (isDraggingOver) {
                         return;
                     }
@@ -111,7 +116,7 @@ export default function useDragAndDrop({
                     break;
             }
         },
-        [isFocused, isDisabled, shouldAcceptDrop, setDropEffect, isDraggingOver, onDrop, closePopover, shouldClosePopover],
+        [isFocused, isDisabled, shouldAcceptDrop, handleDragEvent, isDraggingOver, onDrop, closePopover, shouldClosePopover],
     );
 
     useEffect(() => {
