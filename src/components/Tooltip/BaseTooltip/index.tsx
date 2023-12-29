@@ -1,5 +1,5 @@
 import {BoundsObserver} from '@react-ng/bounds-observer';
-import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useRef, useState} from 'react';
+import React, {Children, ForwardedRef, forwardRef, memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Animated} from 'react-native';
 import Hoverable from '@components/Hoverable';
 import TooltipRenderedOnPageBody from '@components/Tooltip/TooltipRenderedOnPageBody';
@@ -69,6 +69,8 @@ function Tooltip(
     }: TooltipProps,
     ref: ForwardedRef<BoundsObserver>,
 ) {
+    const child = Children.only(children);
+
     const {preferredLocale} = useLocalize();
     const {windowWidth} = useWindowDimensions();
 
@@ -187,17 +189,17 @@ function Tooltip(
     const updateTargetPositionOnMouseEnter = useCallback(
         (e: MouseEvent) => {
             updateTargetAndMousePosition(e);
-            if (children.props.onMouseEnter) {
-                children.props.onMouseEnter(e);
+            if (child.props.onMouseEnter) {
+                child.props.onMouseEnter(e);
             }
         },
-        [children, updateTargetAndMousePosition],
+        [child, updateTargetAndMousePosition],
     );
 
     // Skip the tooltip and return the children if the text is empty,
     // we don't have a render function or the device does not support hovering
     if ((StringUtils.isEmptyString(text) && renderTooltipContent == null) || !hasHoverSupport) {
-        return children;
+        return child;
     }
 
     return (
@@ -231,7 +233,7 @@ function Tooltip(
                     onHoverOut={hideTooltip}
                     shouldHandleScroll={shouldHandleScroll}
                 >
-                    {React.cloneElement(children, {
+                    {React.cloneElement(child, {
                         onMouseEnter: updateTargetPositionOnMouseEnter,
                     })}
                 </Hoverable>
